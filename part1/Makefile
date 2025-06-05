@@ -1,13 +1,11 @@
 EXEC=park
 FLAGS=-g -o
 
-all: pseudoshell
+all: park
 
-park: park.o string_parser.o 
+park: park.o
 	$(CC) $(FLAGS) $@ $^
-
-park.o: main.c
-	$(CC) -c $^    
+ 
 
 # %< grabs left dependency
 
