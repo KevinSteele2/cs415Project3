@@ -36,7 +36,6 @@ void* passenger_thread(void* arg){
     rqueue_size++;
     // Possibly print ride queue here...
     printf("Passenger %d joined the ride queue\n", p->number);
-    printf("Passenger %d boarded a car\n", p->number); // add car # in later installments
     pthread_exit(NULL);
 }
 
@@ -120,9 +119,8 @@ int main(int argc, char *argv[])
     PArgs pargs = {.number = 1, .exploring_time = exploring_time};
     CArgs cargs = {.wait_period = wait_period, .ride_duration = ride_duration};
     pthread_create(&passenger, NULL, passenger_thread, &pargs);
-    pthread_create(&car, NULL, car_thread, &cargs);
-
     pthread_join(passenger, NULL);
+    pthread_create(&car, NULL, car_thread, &cargs);
     pthread_join(car, NULL);
 
     printf("Simulation Finished\n");
