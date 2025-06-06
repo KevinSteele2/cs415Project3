@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 pthread_mutex_t rqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
-finished = 0;
+int finished = 0;
 int opt;
 int n = 1;
 int num_cars = 1;
