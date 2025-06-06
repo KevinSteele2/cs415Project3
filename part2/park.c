@@ -51,12 +51,12 @@ void* car_thread(void* arg){
         int on_ride = 0;
 
         while(1){
-            pthread_mutex_lock(&ride_queue_mutex);
+            pthread_mutex_lock(&rqueue_mutex);
             if(rqueue_size > 0){
-                pthread_mutex_unlock(&ride_queue_mutex);
-                break
+                pthread_mutex_unlock(&rqueue_mutex);
+                break;
             }
-            pthread_mutex_unlock(&ride_queue_mutex);
+            pthread_mutex_unlock(&rqueue_mutex);
             sleep(1);
         }
 
