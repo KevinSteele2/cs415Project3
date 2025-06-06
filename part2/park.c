@@ -5,13 +5,7 @@
 #include <unistd.h>
 
 pthread_mutex_t rqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
-int finished = 0;
-int opt;
-int n = 1;
-int num_cars = 1;
-int capacity = 1;
-int wait_period = 3;
-int ride_duration = 3;
+volatile int simulation_done = 0;
 
 typedef struct{
     int number;
@@ -46,7 +40,6 @@ void* passenger_thread(void* arg){
     pthread_mutex_lock(&rqueue_mutex);
     ride_queue[rqueue_size] = queued_passenger;
     rqueue_size++;
-    finished++;
     // Possibly print ride queue here...
     printf("Passenger %d joined the ride queue\n", p->number);
     pthread_mutex_unlock(&rqueue_mutex);
@@ -59,33 +52,29 @@ void* car_thread(void* arg){
         int on_ride = 0;
 
         pthread_mutex_lock(&rqueue_mutex);
-        while(rqueue_size == 0){
-            if(rqueue_size > 0){
-                pthread_mutex_unlock(&rqueue_mutex);
-                break;
-            }
+        if (rqueue_size == 0) {
             pthread_mutex_unlock(&rqueue_mutex);
+            if (simulation_done) break; 
             sleep(1);
+            continue;
         }
+        pthread_mutex_unlock(&rqueue_mutex);
 
         printf("Car %d invoked load(), passengers loading...\n", c->car_number);
         sleep(c->wait_period);
+        pthread_mutex_lock(&rqueue_mutex);
+
         while(rqueue_size > 0 && on_ride < c->capacity){
             int p_boarding = ride_queue[rqueue_size - 1];
             rqueue_size--;
             printf("Passenger %d boarded car %d\n", p_boarding, c->car_number);
             on_ride++;
         }
+        pthread_mutex_unlock(&rqueue_mutex);
         if(on_ride == 0){
             printf("No passengers in ride queue\n");
             break;
         }
-        pthread_mutex_lock(&rqueue_mutex);
-        if(finished >= n && rqueue_size == 0){
-            pthread_mutex_unlock(&rqueue_mutex);
-            break;
-        }
-        pthread_mutex_unlock(&rqueue_mutex);
         sleep(c->ride_duration);
         printf("Car %d has finished ride, passengers unloading...\n", c->car_number);
     }
@@ -173,6 +162,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < n; i++){
         pthread_join(passengers[i], NULL);
     }
+    simulation_done = 1;
     for(i = 0; i < num_cars; i++){
         pthread_join(cars[i], NULL);
     }
