@@ -147,10 +147,6 @@ int main(int argc, char *argv[])
         all_pargs[i].exploring_time = (rand()%10) + 1;
         pthread_create(&passengers[i], NULL, passenger_thread, &all_pargs[i]);
     }
-    for (i = 0; i < n; i++){
-        pthread_join(passengers[i], NULL);
-    }
-
     pthread_t *cars = malloc(num_cars * sizeof(pthread_t));
     CArgs *all_cars = malloc(num_cars * sizeof(CArgs));
     for (i = 0; i< num_cars; i++){
@@ -159,6 +155,9 @@ int main(int argc, char *argv[])
         all_cars[i].capacity = capacity;
         all_cars[i].car_number = i+1;
         pthread_create(&cars[i], NULL, car_thread, &all_cars[i]);
+    }
+    for (i = 0; i < n; i++){
+        pthread_join(passengers[i], NULL);
     }
     for(i = 0; i < num_cars; i++){
         pthread_join(cars[i], NULL);
