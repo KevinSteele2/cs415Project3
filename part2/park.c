@@ -6,6 +6,12 @@
 
 pthread_mutex_t rqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
 finished = 0;
+int opt;
+int n = 1;
+int num_cars = 1;
+int capacity = 1;
+int wait_period = 3;
+int ride_duration = 3;
 
 typedef struct{
     int number;
@@ -40,7 +46,7 @@ void* passenger_thread(void* arg){
     pthread_mutex_lock(&rqueue_mutex);
     ride_queue[rqueue_size] = queued_passenger;
     rqueue_size++;
-    passengers_finished++;
+    finished++;
     // Possibly print ride queue here...
     printf("Passenger %d joined the ride queue\n", p->number);
     pthread_mutex_unlock(&rqueue_mutex);
@@ -75,8 +81,8 @@ void* car_thread(void* arg){
             break;
         }
         pthread_mutex_lock(&rqueue_mutex);
-        if(passengers_finished >= n && rqueue_size == 0){
-            pthread_mutex_unlock(%rqueue_mutex);
+        if(finished >= n && rqueue_size == 0){
+            pthread_mutex_unlock(&rqueue_mutex);
             break;
         }
         pthread_mutex_unlock(&rqueue_mutex);
