@@ -12,6 +12,7 @@ typedef struct{
 typedef struct{
     int wait_period;
     int ride_duration;
+    int capacity;
 } CArgs;
 
 int *ticket_queue;
@@ -41,18 +42,23 @@ void* passenger_thread(void* arg){
 
 void* car_thread(void* arg){
     CArgs* c = (CArgs*)arg;
-    printf("Car invoked load(), passengers loading...\n");
-    sleep(c->wait_period);
-    if(rqueue_size > 0){
-        int p_boarding = ride_queue[rqueue_size - 1];
-        rqueue_size--;
-        printf("Passenger %d boarded car\n", p_boarding);
+    while(1){
+        int on_ride = 0;
+        printf("Car invoked load(), passengers loading...\n");
+        sleep(c->wait_period);
+        while(rqueue_size > 0 && on_ride < c->capacity){
+            int p_boarding = ride_queue[rqueue_size - 1];
+            rqueue_size--;
+            printf("Passenger %d boarded car\n", p_boarding);
+            on_ride++;
+        }
+        if(boarded == 0){
+            printf("No passengers in ride queue\n");
+            break;
+        }
+        sleep(c->ride_duration);
+        printf("Car has finished ride, passengers unloading...\n");
     }
-    else{
-        printf("No passengers in ride queue\n");
-    }
-    sleep(c->ride_duration);
-    printf("Car has finished ride, passengers unloading...\n");
     pthread_exit(NULL);
 }
 
@@ -134,6 +140,7 @@ int main(int argc, char *argv[])
     for (i = 0; i< num_cars; i++){
         all_cars[i].wait_period = wait_period;
         all_cars[i].ride_duration = ride_duration;
+        all_cars[i].capacity = capacity;
         pthread_create(&cars[i], NULL, car_thread, &all_cars[i]);
     }
     for(i = 0; i < num_cars; i++){
