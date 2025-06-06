@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+pthread_mutex_t rqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 typedef struct{
     int number;
     int exploring_time;
@@ -34,10 +36,12 @@ void* passenger_thread(void* arg){
     printf("Passenger %d acquired a ticket\n", p->number);
     int queued_passenger = ticket_queue[tqueue_size - 1];
     tqueue_size--;
+    pthread_mutex_lock(&rqueue_mutex);
     ride_queue[rqueue_size] = queued_passenger;
     rqueue_size++;
     // Possibly print ride queue here...
     printf("Passenger %d joined the ride queue\n", p->number);
+    pthread_mutex_unlock(&rqueue_mutex);
     pthread_exit(NULL);
 }
 
@@ -45,6 +49,17 @@ void* car_thread(void* arg){
     CArgs* c = (CArgs*)arg;
     while(1){
         int on_ride = 0;
+
+        while(1){
+            pthread_mutex_lock(&ride_queue_mutex);
+            if(rqueue_size > 0){
+                pthread_mutex_unlock(&ride_queue_mutex);
+                break
+            }
+            pthread_mutex_unlock(&ride_queue_mutex);
+            sleep(1);
+        }
+
         printf("Car %d invoked load(), passengers loading...\n", c->car_number);
         sleep(c->wait_period);
         while(rqueue_size > 0 && on_ride < c->capacity){
@@ -117,7 +132,7 @@ int main(int argc, char *argv[])
     printf("- Number of passenger threads: %d\n", n);
     printf("- Number of cars: %d\n", num_cars);
     printf("- Capacity per car: %d\n", capacity);
-    printf("- Park exploring time: random value between 1 and 5");
+    printf("- Park exploring time: random value between 1 and 10 seconds\n");
     printf("- Car waiting period: %d\n", wait_period);
     printf("- Ride duration: %d\n", ride_duration);
 
@@ -129,7 +144,7 @@ int main(int argc, char *argv[])
     PArgs *all_pargs = malloc(n * sizeof(PArgs));
     for (i=0; i < n; i++){
         all_pargs[i].number = i+1;
-        all_pargs[i].exploring_time = (rand()%5) + 1;
+        all_pargs[i].exploring_time = (rand()%10) + 1;
         pthread_create(&passengers[i], NULL, passenger_thread, &all_pargs[i]);
     }
     for (i = 0; i < n; i++){
