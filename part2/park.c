@@ -52,7 +52,7 @@ void* car_thread(void* arg){
             printf("Passenger %d boarded car\n", p_boarding);
             on_ride++;
         }
-        if(boarded == 0){
+        if(on_ride == 0){
             printf("No passengers in ride queue\n");
             break;
         }
