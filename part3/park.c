@@ -236,6 +236,8 @@ int main(int argc, char *argv[])
     free(cars);
     free(ticket_queue);
     free(ride_queue);
+    free(all_pargs);
+    free(all_cars);
     printf("Simulation Finished\n");
     return 0;
     
