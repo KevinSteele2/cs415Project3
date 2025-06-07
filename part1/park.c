@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
     PArgs pargs = {.number = 1, .exploring_time = exploring_time};
     CArgs cargs = {.wait_period = wait_period, .ride_duration = ride_duration};
     pthread_create(&passenger, NULL, passenger_thread, &pargs);
-    pthread_join(passenger, NULL);
     pthread_create(&car, NULL, car_thread, &cargs);
+    pthread_join(passenger, NULL);
     pthread_join(car, NULL);
 
     printf("Simulation Finished\n");
