@@ -105,12 +105,12 @@ void* monitor_thread(void* arg){
         char rpassengers[300] = "";
         for(int i=0; i < rqueue_size; i++){
             char q[32];
-            snprintf(q, sizeof(q), "%d%f", ride_queue[i], (i<rqueue_size) ? ", ": "");
+            snprintf(q, sizeof(q), "%d%f", ride_queue[i], (i<rqueue_size-1) ? ", ": "");
             strcat(rpassengers, q);
         }
 
-        int time = (int)(time(NULL) - sim_start);
-        snprintf(msg, sizeof(msg), "\n[Monitor] System state at %d\nTicket Queue: [%s]\nRide Queue: [%s]\n\n", time, tpassengers, rpassengers);
+        int runtime = (int)(time(NULL) - start_time);
+        snprintf(msg, sizeof(msg), "\n[Monitor] System state at %d\nTicket Queue: [%s]\nRide Queue: [%s]\n\n", runtime, tpassengers, rpassengers);
         pthread_mutex_unlock(&rqueue_mutex);
         write(pipefd, msg, strlen(msg));
         sleep(5);
