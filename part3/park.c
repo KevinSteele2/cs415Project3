@@ -11,19 +11,19 @@ volatile int simulation_done = 0;
 typedef struct{
     int number;
     int exploring_time;
-} PArgs;
+} PArgs; // Arguments for passenger thread
 
 typedef struct{
     int wait_period;
     int ride_duration;
     int capacity;
     int car_number;
-} CArgs;
+} CArgs; // Arguments for car thread
 
 typedef struct{
     int pipefd;
     time_t start_time;
-} MArgs;
+} MArgs; // Arguments for monitor thread
 
 int *ticket_queue;
 int *ride_queue;
@@ -38,7 +38,6 @@ void* passenger_thread(void* arg){
     printf("Passenger %d finished exploring, heading to ticket booth.\n", p->number);
     ticket_queue[tqueue_size] = p->number;
     tqueue_size++;
-    // Possible print who is waiting in ticket queue here..
     printf("Passenger %d waiting in ticket queue\n", p->number);
     printf("Passenger %d acquired a ticket\n", p->number);
     int queued_passenger = ticket_queue[tqueue_size - 1];
@@ -46,7 +45,6 @@ void* passenger_thread(void* arg){
     pthread_mutex_lock(&rqueue_mutex);
     ride_queue[rqueue_size] = queued_passenger;
     rqueue_size++;
-    // Possibly print ride queue here...
     printf("Passenger %d joined the ride queue\n", p->number);
     pthread_mutex_unlock(&rqueue_mutex);
     pthread_exit(NULL);
@@ -131,6 +129,7 @@ int main(int argc, char *argv[])
     int pipefd[2];
     pipe(pipefd);
 
+    // Monitor process that reads from pipe
     pid_t monitorpid = fork();
     if(monitorpid == 0){
         close(pipefd[1]);
@@ -143,7 +142,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    while((opt = getopt(argc, argv, ":n:c:p:w:r:h")) != -1){ //get option from the getopt() method
+    while((opt = getopt(argc, argv, ":n:c:p:w:r:h")) != -1){ // Getting parameters
         switch(opt){
             case 'n':
                 n = atoi(optarg);
@@ -179,7 +178,7 @@ int main(int argc, char *argv[])
                 break;
         }
     }
-    for(; optind < argc; optind++){ //when some extra arguments are passed
+    for(; optind < argc; optind++){ 
         printf("Given extra arguments: %s\n", argv[optind]);
     }
 
@@ -195,6 +194,7 @@ int main(int argc, char *argv[])
     ticket_queue = malloc(n * sizeof(int));
     ride_queue = malloc(n* sizeof(int));
 
+    // Thread creation
     MArgs margs;
     margs.pipefd = pipefd[1];
     time_t start_time = time(NULL);
@@ -219,6 +219,8 @@ int main(int argc, char *argv[])
         all_cars[i].car_number = i+1;
         pthread_create(&cars[i], NULL, car_thread, &all_cars[i]);
     }
+
+    // Thread ending
     for (i = 0; i < n; i++){
         pthread_join(passengers[i], NULL);
     }

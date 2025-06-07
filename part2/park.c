@@ -32,7 +32,6 @@ void* passenger_thread(void* arg){
     printf("Passenger %d finished exploring, heading to ticket booth.\n", p->number);
     ticket_queue[tqueue_size] = p->number;
     tqueue_size++;
-    // Possible print who is waiting in ticket queue here..
     printf("Passenger %d waiting in ticket queue\n", p->number);
     printf("Passenger %d acquired a ticket\n", p->number);
     int queued_passenger = ticket_queue[tqueue_size - 1];
@@ -40,7 +39,6 @@ void* passenger_thread(void* arg){
     pthread_mutex_lock(&rqueue_mutex);
     ride_queue[rqueue_size] = queued_passenger;
     rqueue_size++;
-    // Possibly print ride queue here...
     printf("Passenger %d joined the ride queue\n", p->number);
     pthread_mutex_unlock(&rqueue_mutex);
     pthread_exit(NULL);
@@ -90,7 +88,7 @@ int main(int argc, char *argv[])
     int wait_period = 3;
     int ride_duration = 3;
 
-    while((opt = getopt(argc, argv, ":n:c:p:w:r:h")) != -1){ //get option from the getopt() method
+    while((opt = getopt(argc, argv, ":n:c:p:w:r:h")) != -1){
         switch(opt){
             case 'n':
                 n = atoi(optarg);
@@ -126,7 +124,7 @@ int main(int argc, char *argv[])
                 break;
         }
     }
-    for(; optind < argc; optind++){ //when some extra arguments are passed
+    for(; optind < argc; optind++){ 
         printf("Given extra arguments: %s\n", argv[optind]);
     }
 
