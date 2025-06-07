@@ -1,5 +1,5 @@
 EXEC=park
-FLAGS=-g -o -pthread -lpthread
+FLAGS=-g -pthread -lpthread -o
 
 all: park
 
