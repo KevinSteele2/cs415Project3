@@ -64,7 +64,7 @@ void* car_thread(void* arg){
         }
         pthread_mutex_unlock(&rqueue_mutex);
 
-        printf("Car %d invoked load(), passengers loading...\n", c->car_number);
+        printf("Passengers loading into car %d...\n", c->car_number);
         sleep(c->wait_period);
         pthread_mutex_lock(&rqueue_mutex);
 
@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
         pthread_create(&cars[i], NULL, car_thread, &all_cars[i]);
     }
 
-    // Thread ending
+    // Thread joining
     for (i = 0; i < n; i++){
         pthread_join(passengers[i], NULL);
     }

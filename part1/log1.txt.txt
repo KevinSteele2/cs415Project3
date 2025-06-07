@@ -1,0 +1,32 @@
+==1842406== Memcheck, a memory error detector
+==1842406== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==1842406== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==1842406== Command: ./park
+==1842406==
+===Duck Park Simulation===
+Simulation started with these parameters:
+- Number of passenger threads: 1
+- Number of cars: 1
+- Capacity per car: 1
+- Park exploring time: 5
+- Car waiting period: 3
+- Ride duration: 3
+Passenger 1 entered the park.
+Passenger 1 is exploring the park...
+Car invoked load(), passengers loading...
+No passengers in ride queue
+Passenger 1 finished exploring, heading to ticket booth.
+Passenger 1 waiting in ticket queue
+Passenger 1 acquired a ticket
+Passenger 1 joined the ride queue
+Car has finished ride, passengers unloading...
+Simulation Finished
+==1842406==
+==1842406== HEAP SUMMARY:
+==1842406==     in use at exit: 0 bytes in 0 blocks
+==1842406==   total heap usage: 10 allocs, 10 frees, 12,838 bytes allocated
+==1842406==
+==1842406== All heap blocks were freed -- no leaks are possible
+==1842406==
+==1842406== For lists of detected and suppressed errors, rerun with: -s
+==1842406== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

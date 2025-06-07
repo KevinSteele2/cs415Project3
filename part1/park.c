@@ -39,7 +39,7 @@ void* passenger_thread(void* arg){
 
 void* car_thread(void* arg){
     CArgs* c = (CArgs*)arg;
-    printf("Car invoked load(), passengers loading...\n");
+    printf("Passengers loading...\n");
     sleep(c->wait_period);
     if(rqueue_size > 0){
         int p_boarding = ride_queue[rqueue_size - 1];

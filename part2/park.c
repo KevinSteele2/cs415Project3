@@ -58,7 +58,7 @@ void* car_thread(void* arg){
         }
         pthread_mutex_unlock(&rqueue_mutex);
 
-        printf("\nCar %d invoked load(), passengers loading...\n", c->car_number);
+        printf("\nPassengers loading into car %d...\n", c->car_number);
         sleep(c->wait_period);
         pthread_mutex_lock(&rqueue_mutex);
 
