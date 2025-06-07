@@ -3,6 +3,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 pthread_mutex_t rqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
 volatile int simulation_done = 0;
@@ -105,7 +106,7 @@ void* monitor_thread(void* arg){
         char rpassengers[300] = "";
         for(int i=0; i < rqueue_size; i++){
             char q[32];
-            snprintf(q, sizeof(q), "%d%f", ride_queue[i], (i<rqueue_size-1) ? ", ": "");
+            snprintf(q, sizeof(q), "%d%s", ride_queue[i], (i<rqueue_size-1) ? ", ": "");
             strcat(rpassengers, q);
         }
 
